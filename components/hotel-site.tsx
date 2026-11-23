@@ -1,7 +1,9 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { FormEvent, useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { HOMEPAGE_MENU_HIGHLIGHTS } from "@/lib/menu-data";
 import {
   ArrowDown,
   ArrowRight,
@@ -62,7 +64,8 @@ const EXPERIENCES = [
       "Rwandan ingredients, familiar favourites, and one more round at the bar.",
     image: "/images/hotel/hotel-bar-shelves.jpg",
     alt: "Zouru Hotel bar with warm gold hanging pendant lights and backlit wine and spirit shelves",
-    href: "#book",
+    href: "/menu",
+    cta: "Explore the menu",
   },
   {
     id: "gather",
@@ -479,6 +482,9 @@ export function HotelSite() {
           <a href="#dining" onClick={closeMenu}>
             Eat &amp; drink
           </a>
+          <Link href="/menu" onClick={closeMenu}>
+            Menu
+          </Link>
           <a href="#gather" onClick={closeMenu}>
             Gather
           </a>
@@ -813,34 +819,60 @@ export function HotelSite() {
           </div>
 
           <div className="experience-grid">
-            {EXPERIENCES.map((item) => (
-              <article key={item.id} id={item.id} className="experience-card">
-                <a
-                  className="experience-photo"
-                  href={item.href}
-                  aria-label={item.title}
-                >
-                  <Image
-                    src={item.image}
-                    alt={item.alt}
-                    fill
-                    sizes="(max-width: 680px) 100vw, 33vw"
-                  />
-                </a>
-                <div className="experience-meta">
-                  <span>
-                    {item.number} &nbsp; / &nbsp; {item.category}
-                  </span>
-                  <ArrowUpRight size={14} strokeWidth={1.7} aria-hidden="true" />
-                </div>
-                <h3>{item.title}</h3>
-                <p>{item.description}</p>
-                <a className="card-link" href={item.href}>
-                  Find out more
-                  <ArrowRight size={14} strokeWidth={1.6} aria-hidden="true" />
-                </a>
-              </article>
-            ))}
+            {EXPERIENCES.map((item) => {
+              const isRoute = item.href.startsWith("/");
+              const ctaText = "cta" in item ? item.cta : "Find out more";
+              return (
+                <article key={item.id} id={item.id} className="experience-card">
+                  {isRoute ? (
+                    <Link
+                      className="experience-photo"
+                      href={item.href}
+                      aria-label={item.title}
+                    >
+                      <Image
+                        src={item.image}
+                        alt={item.alt}
+                        fill
+                        sizes="(max-width: 680px) 100vw, 33vw"
+                      />
+                    </Link>
+                  ) : (
+                    <a
+                      className="experience-photo"
+                      href={item.href}
+                      aria-label={item.title}
+                    >
+                      <Image
+                        src={item.image}
+                        alt={item.alt}
+                        fill
+                        sizes="(max-width: 680px) 100vw, 33vw"
+                      />
+                    </a>
+                  )}
+                  <div className="experience-meta">
+                    <span>
+                      {item.number} &nbsp; / &nbsp; {item.category}
+                    </span>
+                    <ArrowUpRight size={14} strokeWidth={1.7} aria-hidden="true" />
+                  </div>
+                  <h3>{item.title}</h3>
+                  <p>{item.description}</p>
+                  {isRoute ? (
+                    <Link className="card-link" href={item.href}>
+                      {ctaText}
+                      <ArrowRight size={14} strokeWidth={1.6} aria-hidden="true" />
+                    </Link>
+                  ) : (
+                    <a className="card-link" href={item.href}>
+                      {ctaText}
+                      <ArrowRight size={14} strokeWidth={1.6} aria-hidden="true" />
+                    </a>
+                  )}
+                </article>
+              );
+            })}
           </div>
         </section>
 
@@ -992,10 +1024,29 @@ export function HotelSite() {
                 Coffee, always
               </span>
             </div>
-            <a className="light-link" href="#book">
-              Plan a visit
-              <ArrowUpRight size={15} strokeWidth={1.6} aria-hidden="true" />
-            </a>
+
+            <ul className="table-highlights" aria-label="Menu highlights">
+              {HOMEPAGE_MENU_HIGHLIGHTS.map((item) => (
+                <li key={item.name} className="table-highlight-row">
+                  <div>
+                    <span className="table-highlight-name">{item.name}</span>
+                    <span className="table-highlight-detail">{item.detail}</span>
+                  </div>
+                  <span className="table-highlight-price">{item.price}</span>
+                </li>
+              ))}
+            </ul>
+
+            <div className="table-actions">
+              <Link className="light-link" href="/menu">
+                View full menu
+                <ArrowUpRight size={15} strokeWidth={1.6} aria-hidden="true" />
+              </Link>
+              <a className="light-link table-secondary-link" href="#book">
+                Plan a visit
+                <ArrowUpRight size={15} strokeWidth={1.6} aria-hidden="true" />
+              </a>
+            </div>
           </div>
         </section>
 
