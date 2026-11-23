@@ -100,31 +100,6 @@ select {
   height: 68px;
 }
 
-.wordmark {
-  font-family: var(--font-serif);
-  letter-spacing: -0.075em;
-  color: #294137;
-  flex-direction: column;
-  align-items: flex-start;
-  font-size: 34px;
-  font-weight: 700;
-  line-height: 0.8;
-  display: inline-flex;
-}
-
-.wordmark > span {
-  color: #bf684b;
-  margin-left: 62px;
-  display: inline;
-  position: absolute;
-}
-
-.wordmark small {
-  font: 8px var(--font-sans);
-  letter-spacing: 0.18em;
-  margin-top: 8px;
-}
-
 .main-nav {
   align-items: center;
   gap: 36px;
@@ -447,11 +422,38 @@ select {
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
-  padding-right: 27px;
+  background-image: none;
+  padding: 0 30px 0 10px;
+  line-height: 39px;
+  display: block;
+  cursor: pointer;
 }
 
-.booking-form label > span {
+.booking-form select::-ms-expand {
+  display: none;
+}
+
+.booking-form select::picker-icon {
+  display: none;
+}
+
+.booking-form .field-label {
+  align-items: baseline;
+  gap: 4px;
+  display: inline-flex;
+}
+
+.booking-form .field-optional {
   color: #9a9c92;
+}
+
+.booking-honeypot {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
 }
 
 .select-chevron {
@@ -472,9 +474,9 @@ select {
   border: 0;
   justify-content: space-between;
   align-items: center;
+  align-self: end;
   gap: 12px;
-  min-height: 41px;
-  margin-top: 18px;
+  height: 41px;
   padding: 0 15px;
   font-size: 11px;
   transition: background 0.2s;
@@ -627,7 +629,9 @@ select {
 }
 
 .experience-card {
+  flex-direction: column;
   min-width: 0;
+  display: flex;
 }
 
 .experience-photo {
@@ -677,6 +681,8 @@ select {
 .card-link {
   border-bottom: 1px solid #a8b0a6;
   align-items: center;
+  align-self: flex-start;
+  margin-top: auto;
   gap: 9px;
   padding: 6px 0;
   font-size: 10px;
@@ -1165,11 +1171,6 @@ select {
   display: grid;
 }
 
-.footer-wordmark {
-  color: #f7f4eb;
-  font-size: 32px;
-}
-
 .footer-main > p {
   font: 19px / 1.45 var(--font-serif);
   color: #e6c1a6;
@@ -1281,14 +1282,6 @@ select {
     height: 54px;
   }
 
-  .wordmark {
-    font-size: 30px;
-  }
-
-  .wordmark > span {
-    margin-left: 55px;
-  }
-
   .menu-toggle {
     z-index: 2;
     color: #294137;
@@ -1373,7 +1366,6 @@ select {
   }
 
   .submit-booking {
-    margin-top: 17px;
     padding: 0 10px;
     font-size: 10px;
   }

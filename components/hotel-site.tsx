@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import {
   ArrowDown,
   ArrowRight,
@@ -22,7 +22,7 @@ import {
 
 const HERO_SLIDES = [
   {
-    src: "/zouru-lake-kivu.png",
+    src: "/images/hero/lake-kivu-terrace.jpg",
     alt: "The quiet shoreline of Lake Kivu from a garden terrace in Gisenyi",
     index: "01 / 03",
     caption: "A slower side of Rwanda",
@@ -34,7 +34,7 @@ const HERO_SLIDES = [
     caption: "Warm evenings at Zouru",
   },
   {
-    src: "/zouru-lake-shore.png",
+    src: "/images/hero/lake-kivu-shore.jpg",
     alt: "A leafy shoreline looking across Lake Kivu toward the hills",
     index: "03 / 03",
     caption: "Find your quiet by the water",
@@ -213,6 +213,42 @@ function toLocalIsoDate(date: Date): string {
   return `${year}-${month}-${day}`;
 }
 
+function addDaysToIso(iso: string, days: number): string {
+  const [y, m, d] = iso.split("-").map(Number);
+  if (!y || !m || !d) return "";
+  return toLocalIsoDate(new Date(y, m - 1, d + days));
+}
+
+function subscribeVisibility(callback: () => void) {
+  const onChange = () => {
+    if (document.visibilityState === "visible") callback();
+  };
+  document.addEventListener("visibilitychange", onChange);
+  return () => document.removeEventListener("visibilitychange", onChange);
+}
+
+function getTodayIsoSnapshot() {
+  return toLocalIsoDate(new Date());
+}
+
+function getEmptyStringSnapshot() {
+  return "";
+}
+
+function subscribeReducedMotion(callback: () => void) {
+  const media = window.matchMedia("(prefers-reduced-motion: reduce)");
+  media.addEventListener("change", callback);
+  return () => media.removeEventListener("change", callback);
+}
+
+function getReducedMotionSnapshot() {
+  return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+}
+
+function getReducedMotionServerSnapshot() {
+  return false;
+}
+
 export function HotelSite() {
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -221,11 +257,18 @@ export function HotelSite() {
   const [isPaused, setIsPaused] = useState(false);
   const [isHovering, setIsHovering] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
-  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+  const prefersReducedMotion = useSyncExternalStore(
+    subscribeReducedMotion,
+    getReducedMotionSnapshot,
+    getReducedMotionServerSnapshot
+  );
 
   // Rooms gallery & lightbox state
   const [roomFilter, setRoomFilter] = useState<RoomCategory>("all");
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+  const lightboxDialogRef = useRef<HTMLDivElement | null>(null);
+  const lightboxCloseRef = useRef<HTMLButtonElement | null>(null);
+  const lastGalleryTriggerRef = useRef<HTMLElement | null>(null);
 
   // Booking form state
   const [guestName, setGuestName] = useState("");
@@ -235,32 +278,20 @@ export function HotelSite() {
   const [guests, setGuests] = useState("2");
   const [roomType, setRoomType] = useState<string>("Lake view room");
   const [phone, setPhone] = useState("");
+  const [website, setWebsite] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [minDates, setMinDates] = useState({ today: "", tomorrow: "" });
 
-  useEffect(() => {
-    const now = new Date();
-    const tomorrow = new Date(
-      now.getFullYear(),
-      now.getMonth(),
-      now.getDate() + 1
-    );
-    setMinDates({
-      today: toLocalIsoDate(now),
-      tomorrow: toLocalIsoDate(tomorrow),
-    });
-  }, []);
-
-  useEffect(() => {
-    const media = window.matchMedia("(prefers-reduced-motion: reduce)");
-    setPrefersReducedMotion(media.matches);
-    const onChange = (event: MediaQueryListEvent) =>
-      setPrefersReducedMotion(event.matches);
-    media.addEventListener("change", onChange);
-    return () => media.removeEventListener("change", onChange);
-  }, []);
+  const todayIso = useSyncExternalStore(
+    subscribeVisibility,
+    getTodayIsoSnapshot,
+    getEmptyStringSnapshot
+  );
+  const minDates = {
+    today: todayIso,
+    tomorrow: todayIso ? addDaysToIso(todayIso, 1) : "",
+  };
 
   useEffect(() => {
     if (isPaused || isHovering || isFocused || prefersReducedMotion) return;
@@ -275,24 +306,52 @@ export function HotelSite() {
       ? ROOM_GALLERY
       : ROOM_GALLERY.filter((photo) => photo.category === roomFilter);
 
+  const isLightboxOpen = lightboxIndex !== null;
+
+  const openLightbox = (index: number, trigger: HTMLElement | null) => {
+    lastGalleryTriggerRef.current = trigger;
+    setLightboxIndex(index);
+  };
+
+  const closeLightbox = () => {
+    setLightboxIndex(null);
+    window.requestAnimationFrame(() => {
+      lastGalleryTriggerRef.current?.focus();
+    });
+  };
+
   useEffect(() => {
-    if (lightboxIndex === null) return;
+    if (!isLightboxOpen) return;
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
+    lightboxCloseRef.current?.focus();
 
+    const total = filteredRooms.length;
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
-        setLightboxIndex(null);
+        closeLightbox();
       } else if (event.key === "ArrowLeft") {
         setLightboxIndex((current) =>
-          current === null
-            ? null
-            : (current - 1 + ROOM_GALLERY.length) % ROOM_GALLERY.length
+          current === null ? null : (current - 1 + total) % total
         );
       } else if (event.key === "ArrowRight") {
         setLightboxIndex((current) =>
-          current === null ? null : (current + 1) % ROOM_GALLERY.length
+          current === null ? null : (current + 1) % total
         );
+      } else if (event.key === "Tab" && lightboxDialogRef.current) {
+        const focusables = lightboxDialogRef.current.querySelectorAll<HTMLElement>(
+          'button:not([disabled]), [href], [tabindex]:not([tabindex="-1"])'
+        );
+        if (focusables.length === 0) return;
+        const first = focusables[0];
+        const last = focusables[focusables.length - 1];
+        if (event.shiftKey && document.activeElement === first) {
+          event.preventDefault();
+          last.focus();
+        } else if (!event.shiftKey && document.activeElement === last) {
+          event.preventDefault();
+          first.focus();
+        }
       }
     };
 
@@ -301,10 +360,12 @@ export function HotelSite() {
       document.body.style.overflow = previousOverflow;
       window.removeEventListener("keydown", onKeyDown);
     };
-  }, [lightboxIndex]);
+  }, [isLightboxOpen, filteredRooms.length]);
 
   const activeLightboxPhoto =
-    lightboxIndex !== null ? ROOM_GALLERY[lightboxIndex] : null;
+    lightboxIndex !== null && lightboxIndex < filteredRooms.length
+      ? filteredRooms[lightboxIndex]
+      : null;
 
   const currentSlide = HERO_SLIDES[activeSlide];
   const closeMenu = () => setMenuOpen(false);
@@ -333,6 +394,7 @@ export function HotelSite() {
           guests: Number(guests),
           roomType,
           phone: phone.trim(),
+          website,
         }),
       });
 
@@ -540,7 +602,7 @@ export function HotelSite() {
             </p>
             <div className="booking-contact">
               Not sure what suits you?
-              <a href="#dining">
+              <a href="#rooms">
                 Explore the hotel
                 <ArrowUpRight size={13} strokeWidth={1.7} aria-hidden="true" />
               </a>
@@ -548,6 +610,19 @@ export function HotelSite() {
           </div>
 
           <form className="booking-form" onSubmit={handleBookingSubmit}>
+            <div className="booking-honeypot" aria-hidden="true">
+              <label>
+                Website
+                <input
+                  type="text"
+                  name="website"
+                  tabIndex={-1}
+                  autoComplete="off"
+                  value={website}
+                  onChange={(event) => setWebsite(event.target.value)}
+                />
+              </label>
+            </div>
             <label>
               Your name
               <input
@@ -642,7 +717,9 @@ export function HotelSite() {
             </label>
 
             <label className="booking-phone">
-              Phone <span>(optional)</span>
+              <span className="field-label">
+                Phone <span className="field-optional">(optional)</span>
+              </span>
               <input
                 type="tel"
                 name="phone"
@@ -799,7 +876,10 @@ export function HotelSite() {
                   type="button"
                   className={`rooms-filter-btn${roomFilter === option.value ? " is-active" : ""}`}
                   aria-pressed={roomFilter === option.value}
-                  onClick={() => setRoomFilter(option.value)}
+                  onClick={() => {
+                    setRoomFilter(option.value);
+                    setLightboxIndex(null);
+                  }}
                 >
                   {option.label}
                 </button>
@@ -815,9 +895,6 @@ export function HotelSite() {
             className={`rooms-gallery${roomFilter !== "all" ? " is-filtered" : ""}`}
           >
             {filteredRooms.map((photo, index) => {
-              const fullIndex = ROOM_GALLERY.findIndex(
-                (entry) => entry.src === photo.src
-              );
               const tileVariant =
                 roomFilter !== "all"
                   ? ""
@@ -834,7 +911,7 @@ export function HotelSite() {
                   key={photo.src}
                   type="button"
                   className={`room-tile${tileVariant}`}
-                  onClick={() => setLightboxIndex(fullIndex)}
+                  onClick={(event) => openLightbox(index, event.currentTarget)}
                   aria-label={`View ${photo.title} full size`}
                 >
                   <div className="room-tile-photo">
@@ -1029,11 +1106,12 @@ export function HotelSite() {
 
       {activeLightboxPhoto && lightboxIndex !== null && (
         <div
+          ref={lightboxDialogRef}
           className="lightbox"
           role="dialog"
           aria-modal="true"
           aria-label={activeLightboxPhoto.title}
-          onClick={() => setLightboxIndex(null)}
+          onClick={closeLightbox}
         >
           <div
             className="lightbox-top"
@@ -1042,15 +1120,16 @@ export function HotelSite() {
             <div className="lightbox-meta">
               <span>
                 {String(lightboxIndex + 1).padStart(2, "0")} /{" "}
-                {String(ROOM_GALLERY.length).padStart(2, "0")}
+                {String(filteredRooms.length).padStart(2, "0")}
               </span>
               <span>{activeLightboxPhoto.tag}</span>
             </div>
             <button
+              ref={lightboxCloseRef}
               type="button"
               className="lightbox-btn"
               aria-label="Close photo viewer"
-              onClick={() => setLightboxIndex(null)}
+              onClick={closeLightbox}
             >
               <X size={18} strokeWidth={1.7} aria-hidden="true" />
             </button>
@@ -1066,8 +1145,8 @@ export function HotelSite() {
               aria-label="Previous photo"
               onClick={() =>
                 setLightboxIndex(
-                  (lightboxIndex - 1 + ROOM_GALLERY.length) %
-                    ROOM_GALLERY.length
+                  (lightboxIndex - 1 + filteredRooms.length) %
+                    filteredRooms.length
                 )
               }
             >
@@ -1089,7 +1168,7 @@ export function HotelSite() {
               className="lightbox-btn"
               aria-label="Next photo"
               onClick={() =>
-                setLightboxIndex((lightboxIndex + 1) % ROOM_GALLERY.length)
+                setLightboxIndex((lightboxIndex + 1) % filteredRooms.length)
               }
             >
               <ChevronRight size={18} strokeWidth={1.7} aria-hidden="true" />
