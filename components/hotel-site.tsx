@@ -28,10 +28,10 @@ const HERO_SLIDES = [
     caption: "A slower side of Rwanda",
   },
   {
-    src: "/zouru-lake-dawn.png",
-    alt: "The morning light rising over the calm waters of Lake Kivu",
+    src: "/images/hotel/hotel-exterior-night.jpg",
+    alt: "Zouru Bravo Hotel illuminated at dusk with glowing cantilevered balconies",
     index: "02 / 03",
-    caption: "Mornings on Lake Kivu",
+    caption: "Warm evenings at Zouru",
   },
   {
     src: "/zouru-lake-shore.png",
@@ -60,9 +60,8 @@ const EXPERIENCES = [
     title: "Pull up a chair",
     description:
       "Rwandan ingredients, familiar favourites, and one more round at the bar.",
-    image:
-      "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1000&q=85",
-    alt: "Warmly lit restaurant ready for dinner service",
+    image: "/images/hotel/hotel-bar-shelves.jpg",
+    alt: "Zouru Hotel bar with warm gold hanging pendant lights and backlit wine and spirit shelves",
     href: "#book",
   },
   {
@@ -72,76 +71,130 @@ const EXPERIENCES = [
     title: "Make room for ideas",
     description:
       "A change of scenery for the conversations that move things forward.",
-    image:
-      "https://images.unsplash.com/photo-1517457373958-b7bdd4587205?auto=format&fit=crop&w=1000&q=85",
-    alt: "Bright meeting space set for a small gathering",
+    image: "/images/hotel/hotel-reception.jpg",
+    alt: "Zouru Bravo Hotel reception lobby with fluted slate counter and marble crest wall",
     href: "#book",
   },
 ] as const;
 
-type RoomCategory = "all" | "bedrooms" | "ensuite";
+type RoomCategory = "all" | "rooms" | "exterior" | "spaces";
 
 const ROOM_GALLERY = [
   {
     src: "/images/rooms/room-botanical-suite.jpg",
     title: "Botanical King Room",
-    tag: "01 / BEDROOM",
-    category: "bedrooms" as const,
+    tag: "01 / ROOMS",
+    category: "rooms" as const,
     note: "Taupe tufted headboard, crisp white linens, and teal-gold botanical accents.",
     alt: "Zouru Hotel bedroom with taupe tufted headboard, crisp white pillows, and teal botanical throw cushions",
     objectPosition: "center center",
   },
   {
+    src: "/images/hotel/hotel-exterior-night.jpg",
+    title: "Zouru at Dusk",
+    tag: "02 / EXTERIOR",
+    category: "exterior" as const,
+    note: "Warmly lit cantilevered balconies, stone columns, and calm Gisenyi evenings.",
+    alt: "Zouru Hotel exterior illuminated at night with glowing balconies and potted greenery",
+    objectPosition: "center center",
+  },
+  {
     src: "/images/rooms/room-amber-king.jpg",
     title: "Amber King Room",
-    tag: "02 / BEDROOM",
-    category: "bedrooms" as const,
+    tag: "03 / ROOMS",
+    category: "rooms" as const,
     note: "Channeled beige headboard with warm bronze throw pillows and king bedding.",
     alt: "Zouru Hotel king bed with channeled beige leather headboard, white sheets, and textured bronze runner",
     objectPosition: "center center",
   },
   {
-    src: "/images/rooms/room-botanical-view.jpg",
-    title: "Room Perspective",
-    tag: "03 / BEDROOM",
-    category: "bedrooms" as const,
-    note: "Marble-veined flooring and calm, sunlit tones ready for unhurried stays.",
-    alt: "Wider perspective of a Zouru Hotel bedroom with marble-veined floor tiles and crisp white bedding",
+    src: "/images/hotel/hotel-reception.jpg",
+    title: "Reception & Welcome",
+    tag: "04 / RECEPTION",
+    category: "spaces" as const,
+    note: "Fluted slate reception desk, marble emblem wall, and warm first hellos.",
+    alt: "Zouru Bravo Hotel reception desk beneath a marble wall emblem and ring chandelier",
     objectPosition: "center center",
   },
   {
-    src: "/images/rooms/room-amber-detail.jpg",
-    title: "Bedside Comforts",
-    tag: "04 / BEDROOM",
-    category: "bedrooms" as const,
-    note: "Freshly pressed linens, bedside power, and quiet comfort after the lake.",
-    alt: "Close view of the beige channeled headboard, embroidered white pillows, and bronze cushions",
+    src: "/images/hotel/hotel-balcony-view.jpg",
+    title: "Lantern Balcony",
+    tag: "05 / BALCONY",
+    category: "exterior" as const,
+    note: "Sunlit marble walkways, hanging wrought-iron lanterns, and misty Rubavu hills.",
+    alt: "Sunlit hotel balcony walkway with hanging lanterns looking out toward the hills of Rubavu",
+    objectPosition: "50% 42%",
+  },
+  {
+    src: "/images/hotel/hotel-bar-shelves.jpg",
+    title: "Hotel Bar",
+    tag: "06 / BAR & LOUNGE",
+    category: "spaces" as const,
+    note: "Warm pendant lights, backlit shelves, and unhurried evening drinks.",
+    alt: "Zouru Hotel bar shelves stocked with wine and spirits beneath warm brass pendant lights",
+    objectPosition: "50% 52%",
+  },
+  {
+    src: "/images/rooms/room-amber-art.jpg",
+    title: "Terracotta Tree Suite",
+    tag: "07 / ROOMS",
+    category: "rooms" as const,
+    note: "Warm botanical canvas triptych above plush king pillows and soft walls.",
+    alt: "Zouru Hotel bedroom headboard with vibrant terracotta tree triptych artwork above",
     objectPosition: "center center",
+  },
+  {
+    src: "/images/hotel/hotel-exterior-day.jpg",
+    title: "Modern Facade",
+    tag: "08 / EXTERIOR",
+    category: "exterior" as const,
+    note: "Crisp white balconies, blue architectural glass, and leafy terrace accents.",
+    alt: "Modern white and slate exterior facade of Zouru Hotel under a bright Gisenyi sky",
+    objectPosition: "center center",
+  },
+  {
+    src: "/images/rooms/room-botanical-art.jpg",
+    title: "Sunset Suite",
+    tag: "09 / ROOMS",
+    category: "rooms" as const,
+    note: "Warm golden artwork, dark tufted headboard, and airy floor-length drapes.",
+    alt: "Zouru Hotel suite featuring golden sunset artwork above a dark tufted leather headboard",
+    objectPosition: "center center",
+  },
+  {
+    src: "/images/hotel/hotel-lounge-seating.jpg",
+    title: "Velvet Guest Lounge",
+    tag: "10 / LOUNGE",
+    category: "spaces" as const,
+    note: "Teal velvet sofa and sunlit armchairs arranged for easy conversation.",
+    alt: "Bright guest lounge with teal velvet sofa, yellow scalloped chairs, and coffee table",
+    objectPosition: "center center",
+  },
+  {
+    src: "/images/hotel/hotel-night-tower.jpg",
+    title: "Evening Corner Lounge",
+    tag: "11 / EXTERIOR",
+    category: "exterior" as const,
+    note: "Glowing upper glass lounge and tiered balconies against the night sky.",
+    alt: "Nighttime corner view of Zouru Hotel showing glowing glass top floor and balconies",
+    objectPosition: "50% 35%",
   },
   {
     src: "/images/rooms/room-rain-shower.jpg",
     title: "Walk-in Rain Shower",
-    tag: "05 / EN-SUITE",
-    category: "ensuite" as const,
+    tag: "12 / EN-SUITE",
+    category: "spaces" as const,
     note: "Overhead rainfall showerhead and handheld wand in bright tiled en-suites.",
     alt: "Modern chrome rainfall shower and handheld wand inside a white-tiled Zouru Hotel bathroom",
     objectPosition: "50% 24%",
   },
-  {
-    src: "/images/rooms/room-ensuite-bath.jpg",
-    title: "Private En-suite Bath",
-    tag: "06 / EN-SUITE",
-    category: "ensuite" as const,
-    note: "Clean white ceramic fixtures, round mirror, and stocked bath amenities.",
-    alt: "Bright white-tiled Zouru Hotel en-suite bathroom with pedestal sink and mirror",
-    objectPosition: "50% 35%",
-  },
 ] as const;
 
 const ROOM_FILTER_OPTIONS: { value: RoomCategory; label: string }[] = [
-  { value: "all", label: "All photos (6)" },
-  { value: "bedrooms", label: "Bedrooms (4)" },
-  { value: "ensuite", label: "En-suite bath (2)" },
+  { value: "all", label: "All photos (12)" },
+  { value: "rooms", label: "Rooms (4)" },
+  { value: "exterior", label: "Exterior & views (4)" },
+  { value: "spaces", label: "Spaces & bath (4)" },
 ];
 
 const ROOM_TYPES = [
@@ -717,20 +770,20 @@ export function HotelSite() {
         <section
           id="rooms"
           className="rooms-section"
-          aria-label="Rooms showcase gallery"
+          aria-label="Hotel photo gallery"
         >
           <div className="section-heading rooms-heading">
             <div>
               <p className="eyebrow">INSIDE ZOURU</p>
               <h2>
-                Quiet rooms made
+                Spaces made
                 <br />
                 for <em>slow mornings.</em>
               </h2>
             </div>
             <p className="section-aside">
-              Crisp white linens, warm tones, and private en-suite baths — a
-              calm place to return to after a day by Lake Kivu.
+              Illuminated balconies, welcoming lounges, crisp white linens, and
+              calm rooms — a real look inside Zouru Hotel in Gisenyi.
             </p>
           </div>
 
@@ -738,7 +791,7 @@ export function HotelSite() {
             <div
               className="rooms-filters"
               role="group"
-              aria-label="Filter room photos"
+              aria-label="Filter hotel photos"
             >
               {ROOM_FILTER_OPTIONS.map((option) => (
                 <button
@@ -772,7 +825,9 @@ export function HotelSite() {
                     ? " room-tile-lead"
                     : index === 1
                       ? " room-tile-secondary"
-                      : " room-tile-sub";
+                      : index === 6 || index === 7
+                        ? " room-tile-feature"
+                        : " room-tile-sub";
 
               return (
                 <button
@@ -790,8 +845,9 @@ export function HotelSite() {
                       sizes={
                         roomFilter === "all" && index === 0
                           ? "(max-width: 680px) 100vw, 58vw"
-                          : roomFilter === "all" && index === 1
-                            ? "(max-width: 680px) 100vw, 42vw"
+                          : roomFilter === "all" &&
+                              (index === 1 || index === 6 || index === 7)
+                            ? "(max-width: 680px) 100vw, 48vw"
                             : "(max-width: 680px) 100vw, 25vw"
                       }
                       style={{ objectPosition: photo.objectPosition }}
@@ -825,10 +881,11 @@ export function HotelSite() {
         <section className="table-section" aria-label="Dining and bar">
           <div className="table-image">
             <Image
-              src="https://images.unsplash.com/photo-1514933651103-005eec06c04b?auto=format&fit=crop&w=1400&q=85"
-              alt="A warmly lit restaurant, ready for guests to gather around the table"
+              src="/images/hotel/hotel-bar-shelves.jpg"
+              alt="The Zouru Hotel bar with warm brass pendant lighting and backlit wine and spirit shelves"
               fill
               sizes="(max-width: 680px) 100vw, 58vw"
+              style={{ objectPosition: "50% 52%" }}
             />
           </div>
 
@@ -888,8 +945,8 @@ export function HotelSite() {
 
           <div className="gather-image">
             <Image
-              src="https://images.unsplash.com/photo-1517457373958-b7bdd4587205?auto=format&fit=crop&w=1000&q=85"
-              alt="Bright meeting space set for a small gathering"
+              src="/images/hotel/hotel-lounge-seating.jpg"
+              alt="Zouru Hotel guest lounge with velvet teal sofa, sunlit yellow armchairs, and coffee table"
               fill
               sizes="(max-width: 680px) 100vw, 45vw"
             />
