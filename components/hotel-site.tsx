@@ -325,9 +325,19 @@ export function HotelSite() {
       </div>
 
       <header className="site-header">
-        <a className="wordmark" href="#home" aria-label="Zouru Hotel home">
-          zouru<span>.</span>
-          <small>HOTEL · GISENYI</small>
+        <a
+          className="brand-logo"
+          href="#home"
+          aria-label="Zouru Bravo Hotel home"
+        >
+          <Image
+            src="/images/zouru-logo-dark.png"
+            alt="Zouru Bravo Hotel"
+            width={767}
+            height={369}
+            priority
+            className="brand-logo-img"
+          />
         </a>
 
         <button
@@ -922,12 +932,17 @@ export function HotelSite() {
       <footer className="site-footer">
         <div className="footer-main">
           <a
-            className="wordmark footer-wordmark"
+            className="brand-logo footer-brand-logo"
             href="#home"
-            aria-label="Zouru Hotel home"
+            aria-label="Zouru Bravo Hotel home"
           >
-            zouru<span>.</span>
-            <small>HOTEL · GISENYI</small>
+            <Image
+              src="/images/zouru-logo-gold.png"
+              alt="Zouru Bravo Hotel"
+              width={767}
+              height={369}
+              className="brand-logo-img"
+            />
           </a>
 
           <p>
